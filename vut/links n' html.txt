@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing / Pre-Release</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121214;
+            color: #e1e1e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #1d1d22;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid #29292e;
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #9042f5;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 4px 12px rgba(144, 66, 245, 0.3);
+            margin-bottom: 2rem;
+        }
+        .btn:hover {
+            background-color: #a25eff;
+            transform: translateY(-1px);
+        }
+        .btn:active {
+            transform: translateY(1px);
+        }
+        .notice-box {
+            background-color: #29292e;
+            border-left: 4px solid #f5a623;
+            padding: 1rem;
+            border-radius: 0 6px 6px 0;
+            text-align: left;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .info-text {
+            color: #8d8d99;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-top: 1.5rem;
+            border-top: 1px solid #29292e;
+            padding-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>VUSH Movie Testing / Pre-release</h1>
+        
+        <a href="https://notvlad.duckdns.org" target="_blank" class="btn">
+            Launch Movie Link 1
+        </a>
+
+        <div class="notice-box">
+            The current link is most likely blocked for many of you. I am planning on building an unblocked page with movies and shows soon.
+        </div>
+
+        <p class="info-text">
+            This staging page is used for testing new features before they are officially published to VUSH.
+        </p>
+    </div>
+
+</body>
+</html>
