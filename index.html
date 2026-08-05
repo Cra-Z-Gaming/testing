@@ -133,7 +133,7 @@
             </div>
             <div>
                 <h2>Apps</h2>
-                <div class="list" id="gamesList"></div>
+                <div class="list" id="appsList"></div>
             </div>
         </div>
 
@@ -144,8 +144,6 @@
 
     <script>
         // ===================== EDIT HERE =====================
-        // Give each entry a name, a short description, and a url.
-        // Leave url as "" to keep that slot showing as empty.
 
         const LINKS = [
             { name: "Movie 1", description: "these are hosted from my home so it wont be the best", url: "https://notvlad.duckdns.org" },
@@ -162,8 +160,8 @@
             { name: "", description: "", url: "" }
         ];
 
-        const GAMES = [
-            { name: "betterBypass Movies 2", description: "uses API to fetch movies", url: "https://raw.githubusercontent.com/Cra-Z-Gaming/testing/refs/heads/main/vut/Movies-x-Shows" },
+        const APPS = [
+            { name: "Movies 2", description: "uses API to fetch movies", url: "https://raw.githubusercontent.com/Cra-Z-Gaming/testing/refs/heads/main/vut/Movies-x-Shows" },
             { name: "", description: "", url: "" },
             { name: "", description: "", url: "" },
             { name: "", description: "", url: "" },
@@ -203,10 +201,38 @@
             });
         }
 
-        function renderGames() {
-            const list = document.getElementById("gamesList");
+        async function runApp(url) {
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = "Loading...";
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Failed to fetch");
+                const html = await response.text();
+                
+                const newWindow = window.open();
+                if (!newWindow) {
+                    alert("Pop-up blocked! Please allow pop-ups for this site.");
+                    return;
+                }
+                
+                newWindow.document.open();
+                newWindow.document.write(html);
+                newWindow.document.close();
+            } catch (err) {
+                alert("Failed to run app: " + err.message);
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function renderApps() {
+            const list = document.getElementById("appsList");
             list.innerHTML = "";
-            GAMES.filter(item => item.url.trim() !== "").forEach(item => {
+            APPS.filter(item => item.url.trim() !== "").forEach(item => {
                 const row = document.createElement("div");
                 row.className = "item";
                 row.innerHTML = `
@@ -214,16 +240,16 @@
                         <div class="item-name">${escapeHtml(item.name)}</div>
                         <div class="item-desc">${escapeHtml(item.description)}</div>
                     </div>
-                    <a class="btn" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">
-                        Play
-                    </a>
+                    <button class="btn" onclick="runApp('${escapeHtml(item.url)}')">
+                        Run
+                    </button>
                 `;
                 list.appendChild(row);
             });
         }
 
         renderLinks();
-        renderGames();
+        renderApps();
     </script>
 </body>
 </html>
