@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Jellyfin Library</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: white;
+    padding: 20px;
+}
+
+h1 {
+    margin-top: 30px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.card {
+    background: #222;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.card img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.title {
+    margin-top: 8px;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Movies</h1>
+<div id="movies" class="grid"></div>
+
+<h1>Shows</h1>
+<div id="shows" class="grid"></div>
+
+
+<script>
+/* ==========================
+       CONFIG
+========================== */
+
+const SERVER_URL = "https://notvlad.duckdns.org";
+const API_KEY = "f3e4ee6280524febbc3083624cba2b6e";
+
+
+/* ==========================
+       JELLYFIN API
+========================== */
+
+async function getItems(type) {
+
+    const url =
+        `${SERVER_URL}/Items?IncludeItemTypes=${type}&Recursive=true`;
+
+    const response = await fetch(url, {
+        headers: {
+            "X-Emby-Token": API_KEY
+        }
+    });
+
+    return await response.json();
+}
+
+
+function imageUrl(item) {
+
+    if (!item.ImageTags || !item.ImageTags.Primary)
+        return "";
+
+    return `${SERVER_URL}/Items/${item.Id}/Images/Primary`;
+}
+
+
+function display(items, element) {
+
+    const box = document.getElementById(element);
+
+    items.Items.forEach(item => {
+
+        const div = document.createElement("div");
+        div.className = "card";
+
+        div.innerHTML = `
+            ${imageUrl(item) ?
+            `<img src="${imageUrl(item)}">`
+            : ""}
+            
+            <div class="title">
+                ${item.Name}
+            </div>
+        `;
+
+        box.appendChild(div);
+    });
+}
+
+
+/* ==========================
+       LOAD
+========================== */
+
+async function start(){
+
+    const movies = await getItems("Movie");
+    const shows = await getItems("Series");
+
+    display(movies, "movies");
+    display(shows, "shows");
+
+}
+
+start();
+
+</script>
+
+</body>
+</html>
