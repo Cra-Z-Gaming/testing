@@ -197,6 +197,7 @@ video {
     padding: 20px 0;
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.15/hls.min.js"></script>
 </head>
 
 <body>
@@ -346,11 +347,21 @@ function imageUrl(item) {
 }
 
 /**
- * Build a direct streaming URL for a video item (movie or episode).
- * Uses Jellyfin's static stream endpoint with the API key as a query param
- * since <video> tags can't send custom headers.
+ * Build a streaming URL for a video item (movie or episode).
+ * Uses Jellyfin's HLS transcoding endpoint (master.m3u8), which is far more
+ * reliable across browsers than static/direct-play since Jellyfin transcodes
+ * to a browser-compatible format on the fly. The API key is passed as a
+ * query param since <video>/<source> can't send custom headers.
  */
 function streamUrl(itemId) {
+    return `${SERVER_URL}/Videos/${itemId}/master.m3u8?api_key=${API_KEY}`;
+}
+
+/**
+ * Fallback: direct/static stream URL (no transcoding). Useful if HLS isn't
+ * supported natively and hls.js isn't available, or for debugging codec issues.
+ */
+function directStreamUrl(itemId) {
     return `${SERVER_URL}/Videos/${itemId}/stream?static=true&api_key=${API_KEY}`;
 }
 
@@ -546,25 +557,70 @@ function backToSeasons() {
        PLAYER
 ========================== */
 
+let hlsInstance = null;
+
 function playItem(itemId, itemName) {
     const playerSection = document.getElementById("playerSection");
     const video = document.getElementById("videoPlayer");
     const title = document.getElementById("playerTitle");
 
     title.textContent = itemName;
-    video.src = streamUrl(itemId);
-
     playerSection.classList.add("active");
 
-    video.play().catch(() => {
-        // Autoplay might be blocked; user can press play manually.
-    });
+    // Clean up any previous hls.js instance before starting a new stream
+    if (hlsInstance) {
+        hlsInstance.destroy();
+        hlsInstance = null;
+    }
+
+    const hlsUrl = streamUrl(itemId);
+
+    video.onerror = () => {
+        console.error("Video playback error, falling back to direct stream:", video.error);
+        video.onerror = null;
+        video.src = directStreamUrl(itemId);
+        video.play().catch(err => console.error("Direct stream also failed:", err));
+    };
+
+    if (window.Hls && Hls.isSupported()) {
+        // Most browsers (Chrome, Firefox, Edge): use hls.js to play the m3u8
+        hlsInstance = new Hls();
+        hlsInstance.loadSource(hlsUrl);
+        hlsInstance.attachMedia(video);
+        hlsInstance.on(Hls.Events.ERROR, (event, data) => {
+            console.error("hls.js error:", data);
+            if (data.fatal) {
+                // Fall back to a direct/static stream if HLS fails entirely
+                hlsInstance.destroy();
+                hlsInstance = null;
+                video.src = directStreamUrl(itemId);
+                video.play().catch(err => console.error("Direct stream fallback failed:", err));
+            }
+        });
+        video.play().catch(() => {
+            // Autoplay might be blocked; user can press play manually.
+        });
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        // Safari: native HLS support, no library needed
+        video.src = hlsUrl;
+        video.play().catch(() => {});
+    } else {
+        // No HLS support at all: fall back to direct stream
+        video.src = directStreamUrl(itemId);
+        video.play().catch(() => {});
+    }
 }
 
 function closePlayer() {
     const playerSection = document.getElementById("playerSection");
     const video = document.getElementById("videoPlayer");
 
+    if (hlsInstance) {
+        hlsInstance.destroy();
+        hlsInstance = null;
+    }
+
+    video.onerror = null;
     video.pause();
     video.removeAttribute("src");
     video.load();
@@ -605,5 +661,4 @@ switchTab("movies");
 
 </body>
 </html>
-
 
