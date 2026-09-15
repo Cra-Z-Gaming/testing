@@ -1,0 +1,36 @@
+{
+  "rules": {
+    "rooms": {
+      ".read": true,
+      ".write": true,
+      "$roomId": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "roomsMeta": {
+      ".read": true,
+      ".write": true,
+      "$roomCode": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "crownMeta": {
+      ".read": true,
+      ".write": true
+    },
+    "crowned": {
+      ".read": true,
+      ".write": true
+    },
+    "modMeta": {
+      ".read": true,
+      ".write": true
+    },
+    "modded": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}
