@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Launcher</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .launch-btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #238636;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .launch-btn:hover {
+            background-color: #2ea043;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="launch-btn" onclick="launchCanvas()">Launch Drawing App</button>
+
+    <script>
+        function launchCanvas() {
+            // Open a new about:blank tab
+            const newWindow = window.open('about:blank', '_blank');
+            if (!newWindow) {
+                alert('Please allow popups to launch the drawing application.');
+                return;
+            }
+
+            // The complete source code for the drawing application
+            const appHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Drawing Canvas</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #ffffff;
+            font-family: sans-serif;
+            transition: background-color 0.3s;
+        }
+        #toolbar {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(50, 50, 50, 0.85);
+            backdrop-filter: blur(5px);
+            padding: 10px 20px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        .section {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-right: 1px solid rgba(255,255,255,0.2);
+            padding-right: 12px;
+        }
+        .section:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+        label {
+            color: #fff;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .color-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            box-sizing: border-box;
+            transition: transform 0.1s;
+        }
+        .color-dot:hover {
+            transform: scale(1.15);
+        }
+        .color-dot.active {
+            border-color: #fff;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        .btn {
+            background: #444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: #555;
+        }
+        .btn.active {
+            background: #007fff;
+        }
+        canvas {
+            display: block;
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toolbar">
+        <!-- Background Toggle -->
+        <div class="section">
+            <label>BG:</label>
+            <button class="btn active" id="bgWhite" onclick="setBg('#ffffff')">White</button>
+            <button class="btn" id="bgBlack" onclick="setBg('#000000')">Black</button>
+        </div>
+
+        <!-- Color Palette -->
+        <div class="section" id="palette">
+            <label>Color:</label>
+            <div class="color-dot active" style="background: #000000;" onclick="setColor('#000000', this)"></div>
+            <div class="color-dot" style="background: #ff3b30;" onclick="setColor('#ff3b30', this)"></div>
+            <div class="color-dot" style="background: #ff9500;" onclick="setColor('#ff9500', this)"></div>
+            <div class="color-dot" style="background: #ffcc00;" onclick="setColor('#ffcc00', this)"></div>
+            <div class="color-dot" style="background: #34c759;" onclick="setColor('#34c759', this)"></div>
+            <div class="color-dot" style="background: #007aff;" onclick="setColor('#007aff', this)"></div>
+            <div class="color-dot" style="background: #af52de;" onclick="setColor('#af52de', this)"></div>
+        </div>
+
+        <!-- Tools -->
+        <div class="section">
+            <button class="btn" id="eraserBtn" onclick="activateEraser()">Eraser</button>
+            <button class="btn" onclick="clearCanvas()">Clear All</button>
+        </div>
+    </div>
+
+    <canvas id="paintCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('paintCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let drawing = false;
+        let currentColor = '#000000';
+        let currentBg = '#ffffff';
+        let isEraser = false;
+        let brushSize = 5;
+
+        // Resize canvas to fill window
+        function resizeCanvas() {
+            // Save existing drawing data
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(canvas, 0, 0);
+
+            // Resize
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            // Fill background color cleanly
+            ctx.fillStyle = currentBg;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Restore original drawing
+            ctx.drawImage(tempCanvas, 0, 0);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        // Drawing Event Listeners
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        canvas.addEventListener('touchstart', (e) => { startDrawing(e.touches[0]); e.preventDefault(); });
+        canvas.addEventListener('touchmove', (e) => { draw(e.touches[0]); e.preventDefault(); });
+        canvas.addEventListener('touchend', stopDrawing);
+
+        function startDrawing(e) {
+            drawing = true;
+            ctx.beginPath();
+            ctx.moveTo(e.clientX, e.clientY);
+        }
+
+        function draw(e) {
+            if (!drawing) return;
+            
+            ctx.lineWidth = isEraser ? 25 : brushSize;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = isEraser ? currentBg : currentColor;
+
+            ctx.lineTo(e.clientX, e.clientY);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            drawing = false;
+            ctx.closePath();
+        }
+
+        // Toolbar Controls
+        function setColor(color, element) {
+            isEraser = false;
+            document.getElementById('eraserBtn').classList.remove('active');
+            
+            // Handle automatic default switch if drawing color matches new background
+            currentColor = color;
+            
+            document.querySelectorAll('.color-dot').forEach(dot => dot.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function activateEraser() {
+            isEraser = true;
+            document.querySelectorAll('.color-dot').forEach(dot => dot.classList.remove('active'));
+            document.getElementById('eraserBtn').classList.add('active');
+        }
+
+        function setBg(color) {
+            currentBg = color;
+            document.body.style.backgroundColor = color;
+            
+            // Toggle active state button UI
+            if(color === '#ffffff') {
+                document.getElementById('bgWhite').classList.add('active');
+                document.getElementById('bgBlack').classList.remove('active');
+                // Automatically fix default color if it blends into the background
+                if(currentColor === '#ffffff' && !isEraser) {
+                    currentColor = '#000000';
+                }
+            } else {
+                document.getElementById('bgBlack').classList.add('active');
+                document.getElementById('bgWhite').classList.remove('active');
+                if(currentColor === '#000000' && !isEraser) {
+                    currentColor = '#ffffff';
+                }
+            }
+            
+            // Redraw background cleanly without deleting paths
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            tempCanvas.getContext('2d').drawImage(canvas, 0, 0);
+            
+            ctx.fillStyle = currentBg;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(tempCanvas, 0, 0);
+        }
+
+        function clearCanvas() {
+            ctx.fillStyle = currentBg;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Initial setup
+        resizeCanvas();
+    <\/script>
+</body>
+</html>
+            `;
+
+            // Inject the code into the document structure of the fresh tab
+            newWindow.document.open();
+            newWindow.document.write(appHtml);
+            newWindow.document.close();
+        }
+    </script>
+</body>
+</html>
