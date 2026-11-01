@@ -49,7 +49,15 @@ input,select,button{font-family:var(--font)}
 .pbar{width:220px;height:6px;background:#444;margin:12px auto 0}.pbar i{display:block;height:100%;width:0;background:var(--ac)}
 .lock{position:fixed;inset:0;z-index:990;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(20,20,20,.55);backdrop-filter:blur(8px);color:#fff}
 .lock.full{background:rgba(10,10,10,.92);backdrop-filter:blur(40px)}
-.lk-time{font-size:clamp(44px,13vw,72px);font-weight:200;white-space:nowrap;font-variant-numeric:tabular-nums}.lk-date{font-size:20px;margin-bottom:24px}.lk-t{font-size:16px}.lk-w,.lk-p{display:flex;flex-direction:column;align-items:center;gap:14px}.lk-an{display:block;max-width:60vw;height:auto;margin-bottom:6px}.lk-hint{font-size:13px;opacity:.6;margin-top:6px}.lk-bat{font-size:16px;opacity:.85}.lk-w{max-width:92vw;max-height:calc(100vh - 80px);overflow-y:auto;scrollbar-width:none}.lk-w::-webkit-scrollbar{display:none}.lock.full .lk-w + .lk-p{margin-top:10px}.lkw{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}.lkw .lk-date{margin-bottom:0}.lk-greet{font-size:28px;font-weight:300}.lk-sm{font-size:15px;opacity:.85}.lk-big{font-size:26px;font-weight:300}.lk-wc{display:flex;flex-direction:column;gap:4px;min-width:230px}.lk-wc div{display:flex;justify-content:space-between;gap:18px;font-size:16px}.lk-wc span{opacity:.75}.lk-ch{font-size:15px;margin-bottom:4px}.lk-cg{display:grid;grid-template-columns:repeat(7,28px);gap:2px;font-size:13px;text-align:center}.lk-cg b{opacity:.55;font-weight:400}.lk-cg span{line-height:28px;border-radius:50%}.lk-cg .on{background:var(--ac);color:#fff}.lk-pr{display:flex;flex-direction:column;gap:8px;min-width:230px;font-size:14px}.lk-pr div{display:flex;justify-content:space-between;gap:12px}.lk-bar{width:100%;height:6px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}.lk-bar i{display:block;height:100%;background:var(--ac2,#4cc2ff)}.lk-note{white-space:pre-wrap;max-width:320px;font-size:16px}
+.lk-time{font-size:clamp(44px,13vw,72px);font-weight:200;white-space:nowrap;font-variant-numeric:tabular-nums}.lk-date{font-size:20px;margin-bottom:24px}.lk-t{font-size:16px}.lk-w,.lk-p{display:flex;flex-direction:column;align-items:center;gap:14px}.lk-an{display:block;max-width:60vw;height:auto;margin-bottom:6px}.lk-hint{font-size:13px;opacity:.6;margin-top:6px}.lk-bat{font-size:16px;opacity:.85}.lk-w{max-width:92vw;max-height:calc(100vh - 80px);overflow-y:auto;scrollbar-width:none}.lk-w::-webkit-scrollbar{display:none}.lock.full .lk-w + .lk-p{margin-top:10px}.lkw{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}.lkw .lk-date{margin-bottom:0}.lk-greet{font-size:28px;font-weight:300}.lk-sm{font-size:15px;opacity:.85}.lk-big{font-size:26px;font-weight:300}.lk-wc{display:flex;flex-direction:column;gap:4px;min-width:230px}.lk-wc div{display:flex;justify-content:space-between;gap:18px;font-size:16px}.lk-wc span{opacity:.75}.lk-ch{font-size:15px;margin-bottom:4px}.lk-cg{display:grid;grid-template-columns:repeat(7,28px);gap:2px;font-size:13px;text-align:center}.lk-cg b{opacity:.55;font-weight:400}.lk-cg span{line-height:28px;border-radius:50%}.lk-cg .on{background:var(--ac);color:#fff}.lk-pr{display:flex;flex-direction:column;gap:8px;min-width:230px;font-size:14px}.lk-pr div{display:flex;justify-content:space-between;gap:12px}.lk-bar{width:100%;height:6px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}.lk-bar i{display:block;height:100%;background:var(--ac2,#4cc2ff)}.lk-note{white-space:pre-wrap;max-width:320px;font-size:16px}.lk-f{position:absolute;inset:0;pointer-events:none;overflow:hidden}.lkf{position:absolute;width:max-content;max-width:90vw}.lk-hint{position:absolute;left:0;right:0;bottom:calc(28px + env(safe-area-inset-bottom,0px));text-align:center;margin:0}
+.lk-edit{position:fixed;inset:0;z-index:985;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(10,10,10,.92);backdrop-filter:blur(40px);color:#fff;user-select:none;-webkit-user-select:none}
+.lk-edit{padding:130px 0 70px;box-sizing:border-box}.lk-edit .lk-w{max-height:calc(100vh - 210px)}.lk-edit .lkw{pointer-events:auto;cursor:grab;touch-action:none}.lk-edit .lkw:active{cursor:grabbing}.lk-edit .lkw.sel{outline:2px dashed var(--ac2,#4cc2ff);outline-offset:8px;border-radius:6px}
+.lk-ph{border:2px dashed rgba(255,255,255,.35);border-radius:10px;padding:34px 48px;opacity:.7;font-size:14px;pointer-events:none}
+.lke-top{position:fixed;top:0;left:0;right:0;z-index:3;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px;background:rgba(0,0,0,.6)}.lke-top b{margin-right:auto}.lke-msg{flex-basis:100%;font-size:13px;opacity:.8}
+.lke-top button,.lke-sel button,.lke-add button,.lke-top select{background:rgba(255,255,255,.16);color:#fff;border:0;border-radius:6px;padding:8px 12px;cursor:pointer;font:inherit;font-size:14px}.lke-top option{color:#000}.lke-top button[data-a=done]{background:var(--ac,#2b7cff)}
+.lke-sel{position:fixed;left:0;right:0;bottom:0;z-index:3;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(0,0,0,.6);font-size:14px}.lke-sel span{opacity:.7}
+.lke-add{position:fixed;inset:0;z-index:4;display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(0,0,0,.7);padding:70px 16px;overflow:auto}.lke-add button{min-width:240px}
+.lke-g{position:fixed;background:rgba(76,194,255,.7);pointer-events:none;display:none;z-index:2}.lke-gv{left:50%;top:0;bottom:0;width:1px}.lke-gh{top:50%;left:0;right:0;height:1px}
 .lk-dots{display:flex;gap:14px}.lk-dots i{width:14px;height:14px;border:2px solid #fff;border-radius:50%}.lk-dots i.on{background:#fff}
 .lk-msg{height:18px;font-size:13px;color:#ff8a8a}
 .lk-pad{display:grid;grid-template-columns:repeat(3,64px);gap:8px}.lk-pad button{height:52px;font-size:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:2px;cursor:pointer}.lk-pad button:hover{background:rgba(255,255,255,.22)}
@@ -1630,6 +1638,7 @@ const SETTINGS = { builtin: 1, single: 1, name: "Settings", icon: "svg:settings"
     else if (d.act === "favup") pickFavicon(u => { set({ favData: u }); draw(); });
     else if (d.act === "lkkey") { t.textContent = "Press a key..."; captureKey(k => { if (k) set({ lockKey: k }); draw(); }); }
     else if (d.act === "lknow") lockNow();
+    else if (d.act === "lkedit") lockEditor();
     else if (d.act === "wxloc") navigator.geolocation.getCurrentPosition(p => { save("lockWxLoc", { lat: +p.coords.latitude.toFixed(2), lon: +p.coords.longitude.toFixed(2) }); save("lockWx", null); notify("Weather location saved", "The lock screen weather widget will use this location."); }, () => notify("Location not allowed", "Allow location for this site in Chrome to use the weather widget."));
     else if (d.act === "bkexp") doExport();
     else if (d.act === "diag") copyDiag();
@@ -1639,6 +1648,7 @@ const SETTINGS = { builtin: 1, single: 1, name: "Settings", icon: "svg:settings"
   };
   root.oninput = e => { const t = e.target, k = t.dataset.k; if (t.dataset.w) { lockWidgetSet(t.dataset.w, t.dataset.o, t.type === "checkbox" ? t.checked : t.value); return; } if (k) set({ [k]: t.type === "checkbox" ? t.checked : t.dataset.n ? +t.value : t.value }); };
   root.onchange = e => { if (e.target.dataset.r) draw(); };
+  lkRedraw = () => { if (root.isConnected) draw(); };
   draw();
 }};
 
@@ -1947,19 +1957,77 @@ function lockWidgetUi() { // the Settings list: every widget with its switch, op
     return `<label style="display:block">${esc(l)}<input type="${t}" ${att(w.id, k)} value="${esc(v || "")}" placeholder="${esc(x || "")}" style="${fld};margin-top:4px"></label>`;
   }).join("")}</div>` : ""}</div>`; }).join("");
 }
+let lkRedraw = null; // set by the Settings page so it can refresh after the editor closes
+const lkPos = o => typeof o.x === "number" && typeof o.y === "number"; // a widget with x/y (percent of the screen, centre point) is placed freely, the others stack in the middle
+const lkCss = o => lkPos(o) ? `left:${o.x}%;top:${o.y}%;transform:translate(-50%,-50%) scale(${o.s || 1})` : (o.s && o.s !== 1 ? `zoom:${o.s}` : "");
+const lkStyle = o => { const c = lkCss(o); return c ? `style="${c}"` : ""; };
+function lockEditor() { // drag-and-drop layout for the lock screen widgets. Nothing is saved until Done.
+  if (document.querySelector(".lk-edit")) return;
+  const S = getSettings(), m = JSON.parse(JSON.stringify(lockWidgetsGet(S))), born = Date.now(); let lay = S.lockLayout || "pw", sel = null, drag = null, nodes = [];
+  const el = document.createElement("div"); el.className = "lk-edit";
+  el.innerHTML = `<div class="lke-top"><b>Customize lock screen</b><select class="lke-lay">${[["pw", "Password only"], ["clock", "Clock above password"], ["two", "Widgets first, then password"]].map(([v, l]) => `<option value="${v}">${l}</option>`).join("")}</select><button data-a="add">Add widget</button><button data-a="reset">Reset layout</button><button data-a="cancel">Cancel</button><button data-a="done">Done</button><div class="lke-msg"></div></div><div class="lk-f"></div><div class="lk-w"></div><div class="lk-ph">Password box</div><div class="lke-g lke-gv"></div><div class="lke-g lke-gh"></div><div class="lke-sel"></div><div class="lke-add"></div>`;
+  const F = el.querySelector(".lk-f"), W = el.querySelector(".lk-w"), ph = el.querySelector(".lk-ph"), selBar = el.querySelector(".lke-sel"), addP = el.querySelector(".lke-add"), gv = el.querySelector(".lke-gv"), gh = el.querySelector(".lke-gh"), layEl = el.querySelector(".lke-lay");
+  layEl.value = lay;
+  const mark = () => el.querySelectorAll(".lkw").forEach(n => n.classList.toggle("sel", n.dataset.wid === sel));
+  const renderSel = () => { const w = sel && m[sel] && LOCK_WIDGETS.find(x => x.id === sel); selBar.innerHTML = w ? `<b>${esc(w.name)}</b><button data-a="sm">Smaller</button><button data-a="lg">Larger</button><button data-a="rm">Remove</button>` : "<span>Drag a widget to move it. Tap one to resize or remove it.</span>"; };
+  const tick = () => { const n = new Date(); for (const [w, nd, o] of nodes) { try { if (w.upd) w.upd(nd, o, S, n, born); } catch { /* a broken widget never blocks the editor */ } } };
+  const render = () => {
+    const list = LOCK_WIDGETS.filter(w => m[w.id]), one = w => `<div class="lkw${lkPos(m[w.id]) ? " lkf" : ""}" data-wid="${w.id}" ${lkStyle(m[w.id])}>${w.html(m[w.id], S)}</div>`;
+    F.innerHTML = list.filter(w => lkPos(m[w.id])).map(one).join(""); W.innerHTML = list.filter(w => !lkPos(m[w.id])).map(one).join("");
+    W.style.display = W.children.length ? "" : "none"; ph.style.display = lay === "two" ? "none" : "";
+    el.querySelector(".lke-msg").textContent = lay === "pw" ? "The layout is Password only, so widgets won't show on the lock screen. Pick another layout above to use them." : "Changes are saved when you press Done.";
+    nodes = list.map(w => [w, el.querySelector(`[data-wid="${w.id}"]`), m[w.id]]); el.querySelectorAll("[data-wid]").forEach(n => n.classList.add("lke")); mark(); renderSel(); tick();
+  };
+  const tm = setInterval(tick, 1000);
+  const close = () => { clearInterval(tm); document.removeEventListener("keydown", kd, true); el.remove(); if (lkRedraw) lkRedraw(); };
+  const kd = e => { if (e.key === "Escape") { e.stopPropagation(); if (addP.style.display === "flex") addP.style.display = "none"; else close(); } };
+  document.addEventListener("keydown", kd, true);
+  layEl.onchange = () => { lay = layEl.value; render(); };
+  el.addEventListener("pointerdown", e => { // grab a widget: it only leaves the centre stack once it actually moves
+    const n = e.target.closest(".lkw"); if (!n) return;
+    sel = n.dataset.wid; mark(); renderSel(); const r = n.getBoundingClientRect();
+    drag = { n, id: sel, sx: e.clientX, sy: e.clientY, cx: r.left + r.width / 2, cy: r.top + r.height / 2, moved: false, pid: e.pointerId };
+    try { n.setPointerCapture(e.pointerId); } catch { /* not capturable: dragging still works while the pointer stays over it */ } e.preventDefault();
+  });
+  el.addEventListener("pointermove", e => {
+    if (!drag || e.pointerId !== drag.pid) return;
+    const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+    if (!drag.moved) { if (Math.hypot(dx, dy) < 5) return; drag.moved = true; if (!drag.n.classList.contains("lkf")) { drag.n.classList.add("lkf"); F.appendChild(drag.n); W.style.display = W.children.length ? "" : "none"; } }
+    let x = Math.min(98, Math.max(2, (drag.cx + dx) / innerWidth * 100)), y = Math.min(98, Math.max(2, (drag.cy + dy) / innerHeight * 100));
+    const sx = Math.abs(x - 50) < 1.5, sy = Math.abs(y - 50) < 1.5; if (sx) x = 50; if (sy) y = 50; gv.style.display = sx ? "block" : "none"; gh.style.display = sy ? "block" : "none";
+    const o = m[drag.id]; o.x = +x.toFixed(2); o.y = +y.toFixed(2); drag.n.style.cssText = lkCss(o);
+  });
+  const end = e => { if (!drag || e.pointerId !== drag.pid) return; drag = null; gv.style.display = gh.style.display = "none"; };
+  el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
+  el.addEventListener("click", e => {
+    const b = e.target.closest("[data-a]");
+    if (!b) { if (!e.target.closest(".lkw") && !e.target.closest(".lke-add")) { sel = null; mark(); renderSel(); } return; }
+    const a = b.dataset.a, o = sel && m[sel];
+    if (a === "cancel") return close();
+    if (a === "done") { save("settings", { ...getSettings(), lockW: m, lockLayout: lay }); return close(); }
+    if (a === "add") { const rest = LOCK_WIDGETS.filter(w => !m[w.id]); addP.innerHTML = `<b>Add a widget</b>${rest.map(w => `<button data-a="pick" data-id="${w.id}">${esc(w.name)}</button>`).join("") || "<span>All widgets are already on.</span>"}<button data-a="shut">Close</button>`; addP.style.display = "flex"; return; }
+    if (a === "shut") { addP.style.display = "none"; return; }
+    if (a === "pick") { m[b.dataset.id] = {}; sel = b.dataset.id; addP.style.display = "none"; return render(); }
+    if (a === "reset") { for (const k in m) { delete m[k].x; delete m[k].y; delete m[k].s; } return render(); }
+    if (o && (a === "sm" || a === "lg")) { o.s = Math.min(2.5, Math.max(.5, +((o.s || 1) + (a === "lg" ? .1 : -.1)).toFixed(2))); const n = el.querySelector(`[data-wid="${sel}"]`); if (n) n.style.cssText = lkCss(o); return; }
+    if (o && a === "rm") { delete m[sel]; sel = null; render(); }
+  });
+  document.body.appendChild(el); render();
+}
 function askPw(title, o = {}) { // resolves with the typed password, or null if cancelled
   return new Promise(res => {
     const check = o.check || (o.newPw ? null : checkPw), S = getSettings();
     const layout = o.full ? S.lockLayout : "pw", two = layout === "two"; // pw = only the password box, clock = widgets above it, two = a widget screen first, any interaction opens the password box
     const on = layout === "pw" ? {} : lockWidgetsGet(S), list = LOCK_WIDGETS.filter(w => on[w.id]);
-    const widgets = list.map(w => `<div class="lkw lkw-${w.id}" data-wid="${w.id}">${w.html(on[w.id], S)}</div>`).join("");
+    const wh = w => `<div class="lkw lkw-${w.id}${lkPos(on[w.id]) ? " lkf" : ""}" data-wid="${w.id}" ${lkStyle(on[w.id])}>${w.html(on[w.id], S)}</div>`;
+    const widgets = list.filter(w => !lkPos(on[w.id])).map(wh).join(""), freeW = list.filter(w => lkPos(on[w.id])).map(wh).join("");
     const el = document.createElement("div"); el.className = "lock" + (o.full ? " full" : "");
-    el.innerHTML = `${o.full && (widgets || two) ? `<div class="lk-w">${widgets}${two ? '<div class="lk-hint">Click or press any key to unlock</div>' : ""}</div>` : ""}<div class="lk-p"><div class="lk-t">${esc(title)}</div><input class="lk-in" type="password" autocomplete="off" autocapitalize="off"><div class="lk-msg"></div><button class="lk-ok">OK</button><div class="lk-foot">${o.full ? '<a data-g="1">Enter as Guest</a>' : ""}${o.cancel ? '<a data-c="1">Cancel</a>' : ""}</div></div>`;
-    const inp = el.querySelector(".lk-in"), msg = el.querySelector(".lk-msg"), wEl = el.querySelector(".lk-w"), pEl = el.querySelector(".lk-p");
+    el.innerHTML = `${o.full && freeW ? `<div class="lk-f">${freeW}</div>` : ""}${o.full && widgets ? `<div class="lk-w">${widgets}</div>` : ""}${o.full && two ? '<div class="lk-hint">Click or press any key to unlock</div>' : ""}<div class="lk-p"><div class="lk-t">${esc(title)}</div><input class="lk-in" type="password" autocomplete="off" autocapitalize="off"><div class="lk-msg"></div><button class="lk-ok">OK</button><div class="lk-foot">${o.full ? '<a data-g="1">Enter as Guest</a>' : ""}${o.cancel ? '<a data-c="1">Cancel</a>' : ""}</div></div>`;
+    const inp = el.querySelector(".lk-in"), msg = el.querySelector(".lk-msg"), wEls = [".lk-f", ".lk-w", ".lk-hint"].map(c => el.querySelector(c)).filter(Boolean), pEl = el.querySelector(".lk-p");
     let busy = false, stage = two ? "w" : "p", last = Date.now(); const born = last, nodes = list.map(w => [w, el.querySelector(`[data-wid="${w.id}"]`), on[w.id]]);
     const setStage = st => { // two-screen mode: "w" = widgets only, "p" = password box
       stage = st; last = Date.now(); if (!two) return;
-      wEl.style.display = st === "w" ? "" : "none"; pEl.style.display = st === "p" ? "" : "none";
+      wEls.forEach(x => x.style.display = st === "w" ? "" : "none"); pEl.style.display = st === "p" ? "" : "none";
       if (st === "p") inp.focus(); else { inp.value = ""; msg.textContent = ""; inp.blur(); }
     };
     const clock = () => { // every second, so minutes never lag, and again the moment the tab becomes visible
@@ -2049,7 +2117,7 @@ const lockSection = () => {
         ${has ? `<h3>Backup passwords</h3>${a.pw.slice(1).map((p, i) => `<div class="item row"><div style="flex:1">Backup ${i + 1}</div><button data-act="bkdel" data-i="${i + 1}">Remove</button></div>`).join("")}<button data-act="bkadd">Add backup password</button>
         
         <h3>Auto-lock</h3><label>Lock after being idle<select data-k="idleLock" data-n="1">${[[0, "Never"], [1, "1 minute"], [5, "5 minutes"], [10, "10 minutes"], [15, "15 minutes"], [30, "30 minutes"]].map(([v, l]) => `<option value="${v}" ${v === getSettings().idleLock ? "selected" : ""}>${l}</option>`).join("")}</select></label>
-        <h3>Lock screen look</h3><label>Layout<select data-k="lockLayout">${[["pw", "Password only"], ["clock", "Clock above password"], ["two", "Widgets first, then password"]].map(([v, l]) => `<option value="${v}" ${v === getSettings().lockLayout ? "selected" : ""}>${l}</option>`).join("")}</select></label><p>Password only shows just the password box. The other two layouts show the widgets you turn on below (all off = a plain screen). With "Widgets first", any click or key opens the password box, and a minute without activity there goes back to the first screen.</p><button data-act="lknow">Lock now to preview</button><h3>Widgets</h3>${lockWidgetUi()}
+        <h3>Lock screen look</h3><label>Layout<select data-k="lockLayout">${[["pw", "Password only"], ["clock", "Clock above password"], ["two", "Widgets first, then password"]].map(([v, l]) => `<option value="${v}" ${v === getSettings().lockLayout ? "selected" : ""}>${l}</option>`).join("")}</select></label><p>Password only shows just the password box. The other two layouts show the widgets you turn on below (all off = a plain screen). With "Widgets first", any click or key opens the password box, and a minute without activity there goes back to the first screen.</p><button data-act="lkedit">Customize lock screen (move and resize widgets)</button> <button data-act="lknow">Lock now to preview</button><h3>Widgets</h3>${lockWidgetUi()}
         <h3>Lock shortcut</h3><label>Lock by pressing a key<input type="checkbox" data-k="lockBind" ${getSettings().lockBind ? "checked" : ""}></label><label>Key<button data-act="lkkey">${esc(getSettings().lockKey)}</button></label><label>Presses in a row<select data-k="lockClicks" data-n="1">${[1, 2, 3, 4, 5].map(n => `<option ${n === getSettings().lockClicks ? "selected" : ""}>${n}</option>`).join("")}</select></label>` : ""}
         <h3>Delete everything</h3><p>Erases all files, apps, settings, Guest data and passwords.${has ? " Needs your password." : ""}</p><button data-act="delall">Delete all</button>`;
 };
