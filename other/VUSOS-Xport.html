@@ -2057,18 +2057,14 @@ async function exportPicker() { // resolves with the ticked options (apps, files
   return new Promise(res => {
     const o = document.createElement("div"); o.className = "dlg";
     const cb = (n, t, sub, off) => `<label style="display:flex;gap:8px;align-items:center;margin:6px 0 6px ${sub ? 26 : 0}px"><input type="checkbox" data-c="${n}" ${off ? "" : "checked"}>${t}</label>`;
-    const sb = (attr, v, t, n) => `<label style="display:flex;gap:8px;align-items:center;margin:4px 0 4px 26px"><input type="checkbox" ${attr}="${esc(v)}" checked>${esc(t)} <span style="opacity:.6">(${esc(n)})</span></label>`;
-    const gl = Object.entries(sc.groups).sort((x, y) => x[0].localeCompare(y[0])).map(([g, l]) => sb("data-g", g, g, l.length + (l.length === 1 ? " item" : " items"))).join("") + sc.dbs.map(n => sb("data-d", n, n, "database")).join("");
-    const siteBox = gl ? cb("site", "Game and site data (saves other pages keep in this browser)") + gl + '<p style="font-size:12px;opacity:.7;margin:0 0 6px 26px">Only pages hosted on this same site can be read.</p>' : "";
+    const siteBox = Object.keys(sc.groups).length || sc.dbs.length ? cb("site", "Save most apps data") + '<p style="font-size:12px;opacity:.7;margin:0 0 6px 26px">Saves from games and other apps on this site (scores, progress, settings). Only pages hosted on this same site can be read.</p>' : "";
     const inp = "width:100%;padding:6px 8px;background:rgba(128,128,128,.2);border:1px solid rgba(128,128,128,.6);color:inherit;outline:0";
     const pwBox = GUEST ? "" : `<div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(128,128,128,.4)">${cb("passwords", "Passwords and logins", 0, 1)}<p style="font-size:12px;opacity:.75;margin:0 0 6px 26px">Off by default. Includes your VUS-OS lock passwords${nSec ? ` and ${nSec} saved login/token item${nSec === 1 ? "" : "s"} from other pages` : ""}. They are encrypted in the file, and you need the passphrase below to restore them.</p><div class="xpw" style="display:none;margin-left:26px"><input class="xp1" type="password" autocomplete="new-password" placeholder="Passphrase (8+ characters)" style="${inp};margin-bottom:6px"><input class="xp2" type="password" autocomplete="new-password" placeholder="Repeat passphrase" style="${inp}"><div class="xmsg" style="color:#f87171;font-size:12px;min-height:16px;margin-top:4px"></div></div></div>`;
     o.innerHTML = `<div class="dlgb" style="display:flex;flex-direction:column;max-height:90vh"><div style="padding:14px 16px 0"><p style="margin-bottom:8px"><b>Export</b><br>Choose what to save.${GUEST ? "" : " Passwords stay out unless you turn them on at the bottom."}</p></div><div style="overflow:auto;padding:0 16px;flex:1;min-height:0">${cb("apps", "Downloaded apps")}${cb("files", "Files and custom apps (text, HTML, music, video, anything you uploaded)")}${cb("pos", "Desktop positions (where icons sit)")}${cb("startmenu", "Start menu tiles and taskbar pins")}${cb("settings", "Settings")}${cb("appearance", "Appearance (theme, accent, background, icon size, name)", 1)}${cb("clock", "Clock (24-hour time)", 1)}${cb("windows", "Windows (snap, remembered positions, keyboard shortcut switches)", 1)}${cb("system", "Updates, storage and Recycle Bin", 1)}${siteBox}${pwBox}</div><div class="dlgf" style="margin:0;padding:12px 16px"><button data-ok="1">Export</button><button>Cancel</button></div></div>`;
     o.onchange = e => {
       const t = e.target, n = t.dataset.c;
       if (n === "settings") o.querySelectorAll("[data-c=appearance],[data-c=clock],[data-c=windows],[data-c=system]").forEach(c => c.checked = t.checked);
-      else if (n === "site") o.querySelectorAll("[data-g],[data-d]").forEach(c => c.checked = t.checked);
       else if (n === "passwords") o.querySelector(".xpw").style.display = t.checked ? "block" : "none";
-      else if ((t.dataset.g !== undefined || t.dataset.d !== undefined) && t.checked) { const m = o.querySelector("[data-c=site]"); if (m) m.checked = true; }
     };
     o.onclick = e => {
       const b = e.target.closest("button"); if (!b) return;
@@ -2080,8 +2076,8 @@ async function exportPicker() { // resolves with the ticked options (apps, files
         if (p1 !== p2) { msg.textContent = "The two passphrases don't match."; return; }
         r.pass = p1;
       }
-      r.groups = r.site ? [...o.querySelectorAll("[data-g]:checked")].map(x => x.dataset.g) : [];
-      r.dbs = r.site ? [...o.querySelectorAll("[data-d]:checked")].map(x => x.dataset.d) : [];
+      r.groups = r.site ? Object.keys(sc.groups) : []; // one switch saves every app's data (login-looking keys still wait for the Passwords switch)
+      r.dbs = r.site ? sc.dbs : [];
       r.siteScan = sc; o.remove(); res(r);
     };
     document.body.appendChild(o);
