@@ -49,7 +49,7 @@ input,select,button{font-family:var(--font)}
 .pbar{width:220px;height:6px;background:#444;margin:12px auto 0}.pbar i{display:block;height:100%;width:0;background:var(--ac)}
 .lock{position:fixed;inset:0;z-index:990;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(20,20,20,.55);backdrop-filter:blur(8px);color:#fff}
 .lock.full{background:rgba(10,10,10,.92);backdrop-filter:blur(40px)}
-.lk-time{font-size:72px;font-weight:200}.lk-date{font-size:20px;margin-bottom:24px}.lk-t{font-size:16px}
+.lk-time{font-size:clamp(44px,13vw,72px);font-weight:200;white-space:nowrap;font-variant-numeric:tabular-nums}.lk-date{font-size:20px;margin-bottom:24px}.lk-t{font-size:16px}.lk-w,.lk-p{display:flex;flex-direction:column;align-items:center;gap:14px}.lk-an{display:block;max-width:60vw;height:auto;margin-bottom:6px}.lk-hint{font-size:13px;opacity:.6;margin-top:6px}.lk-bat{font-size:16px;opacity:.85}.lk-w{max-width:92vw;max-height:calc(100vh - 80px);overflow-y:auto;scrollbar-width:none}.lk-w::-webkit-scrollbar{display:none}.lock.full .lk-w + .lk-p{margin-top:10px}.lkw{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}.lkw .lk-date{margin-bottom:0}.lk-greet{font-size:28px;font-weight:300}.lk-sm{font-size:15px;opacity:.85}.lk-big{font-size:26px;font-weight:300}.lk-wc{display:flex;flex-direction:column;gap:4px;min-width:230px}.lk-wc div{display:flex;justify-content:space-between;gap:18px;font-size:16px}.lk-wc span{opacity:.75}.lk-ch{font-size:15px;margin-bottom:4px}.lk-cg{display:grid;grid-template-columns:repeat(7,28px);gap:2px;font-size:13px;text-align:center}.lk-cg b{opacity:.55;font-weight:400}.lk-cg span{line-height:28px;border-radius:50%}.lk-cg .on{background:var(--ac);color:#fff}.lk-pr{display:flex;flex-direction:column;gap:8px;min-width:230px;font-size:14px}.lk-pr div{display:flex;justify-content:space-between;gap:12px}.lk-bar{width:100%;height:6px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}.lk-bar i{display:block;height:100%;background:var(--ac2,#4cc2ff)}.lk-note{white-space:pre-wrap;max-width:320px;font-size:16px}
 .lk-dots{display:flex;gap:14px}.lk-dots i{width:14px;height:14px;border:2px solid #fff;border-radius:50%}.lk-dots i.on{background:#fff}
 .lk-msg{height:18px;font-size:13px;color:#ff8a8a}
 .lk-pad{display:grid;grid-template-columns:repeat(3,64px);gap:8px}.lk-pad button{height:52px;font-size:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:2px;cursor:pointer}.lk-pad button:hover{background:rgba(255,255,255,.22)}
@@ -1629,13 +1629,15 @@ const SETTINGS = { builtin: 1, single: 1, name: "Settings", icon: "svg:settings"
     else if (d.act === "gdel") deleteGuest();
     else if (d.act === "favup") pickFavicon(u => { set({ favData: u }); draw(); });
     else if (d.act === "lkkey") { t.textContent = "Press a key..."; captureKey(k => { if (k) set({ lockKey: k }); draw(); }); }
+    else if (d.act === "lknow") lockNow();
+    else if (d.act === "wxloc") navigator.geolocation.getCurrentPosition(p => { save("lockWxLoc", { lat: +p.coords.latitude.toFixed(2), lon: +p.coords.longitude.toFixed(2) }); save("lockWx", null); notify("Weather location saved", "The lock screen weather widget will use this location."); }, () => notify("Location not allowed", "Allow location for this site in Chrome to use the weather widget."));
     else if (d.act === "bkexp") doExport();
     else if (d.act === "diag") copyDiag();
     else if (d.act === "rstset") winConfirm("Reset all settings to their defaults? Your files and apps are not touched.", "Reset").then(ok => { if (ok) { save("settings", {}); applyTheme(); tick(); draw(); } });
     else if (d.act === "bkimp") pickBackup();
     else if (d.act === "rm") { toggleInstall(catalog.find(a => key(a) === d.i)); draw(); }
   };
-  root.oninput = e => { const t = e.target, k = t.dataset.k; if (k) set({ [k]: t.type === "checkbox" ? t.checked : t.dataset.n ? +t.value : t.value }); };
+  root.oninput = e => { const t = e.target, k = t.dataset.k; if (t.dataset.w) { lockWidgetSet(t.dataset.w, t.dataset.o, t.type === "checkbox" ? t.checked : t.value); return; } if (k) set({ [k]: t.type === "checkbox" ? t.checked : t.dataset.n ? +t.value : t.value }); };
   root.onchange = e => { if (e.target.dataset.r) draw(); };
   draw();
 }};
@@ -1749,7 +1751,7 @@ const WHATSNEW = { builtin: 1, single: 1, name: "What's new", icon: "svg:info", 
   const me = verTime(OS_VERSION);
   root.innerHTML = `<div class="pad"><h2>What's new</h2><p style="font-size:12px;color:var(--mute)">You have Version-${esc(OS_VERSION)}</p>` + (list.length ? list.map(e => { const t = verTime(e.v), tag = t === me ? "Installed" : t > me ? "Newer than yours" : ""; return `<div style="border-top:1px solid var(--bd);padding-top:10px"><b>Version-${esc(e.v)}</b>${tag ? ` <span style="font-size:11px;color:var(--ac2)">${tag}</span>` : ""}${e.notes.map(n => `<p style="font-size:13px;margin-top:4px">• ${esc(n)}</p>`).join("")}</div>`; }).join("") : '<p style="font-size:13px">The update log could not be loaded. Connect to the internet once and it will be saved for offline use.</p>') + "</div>";
 }};
-const getSettings = () => Object.assign({ site: "VUS-OS", bgMode: "default", bgColor: "#0a0e1a", bgLink: "", bgFile: "", autoUpdate: true, accent: "#0078d7", iconSize: "medium", hour24: false, limitMB: 512, snap: true, taskSearch: true, taskLabels: "partial", taskPos: "bottom", clockSeconds: false, clockWeekday: false, theme: "dark", limiter: "low", binDays: 7, lockBind: false, idleLock: 0, lockKey: "l", lockClicks: 3, favMode: "default", favLink: "", favData: "", keys: true, keysFile: true, keysEdit: true, rememberWin: true, dnd: false, showIcons: true }, LS("settings", {}));
+const getSettings = () => Object.assign({ site: "VUS-OS", bgMode: "default", bgColor: "#0a0e1a", bgLink: "", bgFile: "", autoUpdate: true, accent: "#0078d7", iconSize: "medium", hour24: false, limitMB: 512, snap: true, taskSearch: true, taskLabels: "partial", taskPos: "bottom", clockSeconds: false, clockWeekday: false, theme: "dark", limiter: "low", binDays: 7, lockBind: false, idleLock: 0, lockKey: "l", lockClicks: 3, lockLayout: "pw", lockDigital: true, lockDate: true, lockAnalog: false, lockSeconds: false, lockBattery: false, favMode: "default", favLink: "", favData: "", keys: true, keysFile: true, keysEdit: true, rememberWin: true, dnd: false, showIcons: true }, LS("settings", {}));
 let bgUrl = null;
 async function applyTheme() {
   const s = getSettings(), r = document.documentElement.style;
@@ -1863,25 +1865,126 @@ async function checkPw(v) { // 5 wrong tries = 30 second wait (survives reloads)
   if (n >= 5) { localStorage.setItem("vos2_pwUntil", Date.now() + 30000); return { msg: "Too many tries. Wait 30 seconds." }; }
   return { msg: `Wrong password (${5 - n} tries left)` };
 }
+// ===================== LOCK SCREEN WIDGETS =====================
+// Each widget: html(options, settings) builds it once; upd(node, options, settings, now, lockedAt) refreshes it every second.
+// opts = [key, type, label, extra] describes its options on the Settings page. Enabled widgets live in the "lockW" setting: { id: { ...options } }.
+const LK_FACTS = ["A day on Venus is longer than a year on Venus.", "Octopuses have three hearts.", "Botanically, bananas are berries and strawberries are not.", "Wombat droppings are cube-shaped.", "Sharks are older than trees.", "A group of flamingos is called a flamboyance.", "Honey can last thousands of years if it stays sealed.", "The first computer bug was a real moth, found in a Harvard computer in 1947.", "Scotland's national animal is the unicorn.", "On hot days the Eiffel Tower grows a few centimetres taller.", "There are more possible chess games than atoms in the observable universe.", "Cats have around 30 muscles in each ear.", "Lightning can be several times hotter than the surface of the Sun.", "The shortest war on record, between Britain and Zanzibar, lasted under an hour.", "Mount Everest grows by a few millimetres a year.", "Bees can learn to recognise human faces.", "A cloud can weigh hundreds of tonnes.", "The first domain name ever registered was symbolics.com, in 1985.", "Sea otters sometimes hold hands while they sleep.", "Butterflies taste with their feet."];
+const LK_WX = { 0: "Clear", 1: "Mostly clear", 2: "Partly cloudy", 3: "Overcast", 45: "Fog", 48: "Fog", 51: "Light drizzle", 53: "Drizzle", 55: "Heavy drizzle", 56: "Freezing drizzle", 57: "Freezing drizzle", 61: "Light rain", 63: "Rain", 65: "Heavy rain", 66: "Freezing rain", 67: "Freezing rain", 71: "Light snow", 73: "Snow", 75: "Heavy snow", 77: "Snow grains", 80: "Rain showers", 81: "Rain showers", 82: "Heavy showers", 85: "Snow showers", 86: "Snow showers", 95: "Thunderstorm", 96: "Thunderstorm with hail", 99: "Thunderstorm with hail" };
+const lkTime = (d, S, sec, zone) => d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", ...(sec ? { second: "2-digit" } : {}), hour12: !S.hour24, ...(zone ? { timeZone: zone } : {}) });
+const lkBar = pct => `<div class="lk-bar"><i style="width:${Math.max(0, Math.min(100, pct)).toFixed(1)}%"></i></div>`;
+const lkSpan = ms => { const t = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60); return (h ? h + "h " : "") + m + "m " + String(t % 60).padStart(2, "0") + "s"; };
+const lkSet = (nd, sel, text) => { const x = nd.querySelector(sel); if (x && x.textContent !== text) x.textContent = text; };
+const lkTicks = Array.from({ length: 12 }, (_, i) => `<line x1="60" y1="8" x2="60" y2="${i % 3 ? 13 : 17}" stroke="#fff" stroke-width="${i % 3 ? 1.5 : 2.5}" transform="rotate(${i * 30} 60 60)"/>`).join("");
+const lkMoon = d => { const syn = 29.530588853, age = (((d.getTime() - Date.UTC(2000, 0, 6, 18, 14)) / 864e5) % syn + syn) % syn, lit = (1 - Math.cos(2 * Math.PI * age / syn)) / 2, names = [[1.84, "New moon"], [5.53, "Waxing crescent"], [9.22, "First quarter"], [12.91, "Waxing gibbous"], [16.61, "Full moon"], [20.3, "Waning gibbous"], [23.99, "Last quarter"], [27.68, "Waning crescent"], [99, "New moon"]]; return `${names.find(x => age < x[0])[1]} · ${Math.round(lit * 100)}% lit`; };
+let lkWxBusy = false;
+async function lkWeather(nd, o, d) { // reads the saved location, refreshes from Open-Meteo at most every 30 minutes, and keeps the last reading when offline
+  const loc = LS("lockWxLoc", null), box = nd.querySelector(".lk-wx");
+  if (!loc) { box.textContent = "Weather: set your location in Settings"; return; }
+  let c = LS("lockWx", null);
+  if ((!c || d - c.t > 30 * 60000) && !lkWxBusy) {
+    lkWxBusy = true;
+    try { const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 6000), r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,weather_code`, { signal: ctl.signal }); clearTimeout(t); const j = await r.json(); c = { t: Date.now(), c: j.current.temperature_2m, code: j.current.weather_code }; save("lockWx", c); } catch { /* offline or blocked: keep the last reading */ }
+    lkWxBusy = false;
+  }
+  c = c || LS("lockWx", null);
+  if (!c) { box.textContent = "Weather unavailable"; return; }
+  const f = o.unit === "f", tmp = Math.round(f ? c.c * 9 / 5 + 32 : c.c);
+  box.textContent = `${tmp}°${f ? "F" : "C"} · ${LK_WX[c.code] || "Weather"}`;
+}
+const LOCK_WIDGETS = [
+  { id: "greeting", name: "Greeting", opts: [["name", "text", "Your name", "optional"]], html: () => '<div class="lk-greet"></div>',
+    upd: (nd, o, S, d) => { const h = d.getHours(); lkSet(nd, ".lk-greet", (h >= 5 && h < 12 ? "Good morning" : h >= 12 && h < 17 ? "Good afternoon" : h >= 17 && h < 22 ? "Good evening" : "Good night") + (o.name ? ", " + o.name : "")); } },
+  { id: "analog", name: "Analog clock", opts: [["sec", "bool", "Seconds hand"]],
+    html: o => `<svg class="lk-an" viewBox="0 0 120 120" width="170" height="170"><circle cx="60" cy="60" r="56" fill="rgba(255,255,255,.06)" stroke="#fff" stroke-width="2" opacity=".85"/>${lkTicks}<line class="lk-hh" x1="60" y1="60" x2="60" y2="34" stroke="#fff" stroke-width="4" stroke-linecap="round"/><line class="lk-mh" x1="60" y1="60" x2="60" y2="20" stroke="#fff" stroke-width="3" stroke-linecap="round"/>${o.sec ? '<line class="lk-sh" x1="60" y1="68" x2="60" y2="14" style="stroke:var(--ac2,#4cc2ff)" stroke-width="1.5" stroke-linecap="round"/>' : ""}<circle cx="60" cy="60" r="3" fill="#fff"/></svg>`,
+    upd: (nd, o, S, d) => { const sec = d.getSeconds(), min = d.getMinutes() + sec / 60; nd.querySelector(".lk-hh").setAttribute("transform", `rotate(${((d.getHours() % 12) + min / 60) * 30} 60 60)`); nd.querySelector(".lk-mh").setAttribute("transform", `rotate(${min * 6} 60 60)`); const sh = nd.querySelector(".lk-sh"); if (sh) sh.setAttribute("transform", `rotate(${sec * 6} 60 60)`); } },
+  { id: "digital", name: "Digital clock", opts: [["sec", "bool", "Show seconds"]], html: () => '<div class="lk-time"></div>', upd: (nd, o, S, d) => lkSet(nd, ".lk-time", lkTime(d, S, o.sec)) },
+  { id: "date", name: "Date", opts: [], html: () => '<div class="lk-date"></div>', upd: (nd, o, S, d) => lkSet(nd, ".lk-date", d.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" })) },
+  { id: "worldclock", name: "World clocks", opts: [["zones", "text", "Time zones, comma separated", "America/New_York, Europe/London, Asia/Tokyo"]], html: () => '<div class="lk-wc"></div>',
+    upd: (nd, o, S, d) => { const rows = []; for (const z of String(o.zones || "UTC").split(",").map(x => x.trim()).filter(Boolean).slice(0, 6)) { try { rows.push(`<div>${esc(z.split("/").pop().replace(/_/g, " "))}<span>${esc(lkTime(d, S, false, z))}</span></div>`); } catch { /* unknown time zone: skipped */ } } const h = rows.join("") || "<div>Add time zones in Settings</div>"; if (nd._h !== h) { nd._h = h; nd.querySelector(".lk-wc").innerHTML = h; } } },
+  { id: "calendar", name: "Mini calendar", opts: [], html: () => '<div class="lk-ch"></div><div class="lk-cg"></div>',
+    upd: (nd, o, S, d) => { const k = d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate(); if (nd._k === k) return; nd._k = k; const y = d.getFullYear(), m = d.getMonth(), first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate(); let h = ["S", "M", "T", "W", "T", "F", "S"].map(x => `<b>${x}</b>`).join("") + "<span></span>".repeat(first); for (let i = 1; i <= days; i++) h += `<span${i === d.getDate() ? ' class="on"' : ""}>${i}</span>`; lkSet(nd, ".lk-ch", d.toLocaleDateString([], { month: "long", year: "numeric" })); nd.querySelector(".lk-cg").innerHTML = h; } },
+  { id: "countdown", name: "Countdown", opts: [["label", "text", "Label", "e.g. Birthday"], ["date", "date", "Date"]], html: () => '<div class="lk-sm lk-cl"></div><div class="lk-big lk-cd"></div>',
+    upd: (nd, o, S, d) => { if (!o.date) { lkSet(nd, ".lk-cl", ""); return lkSet(nd, ".lk-cd", "Pick a date in Settings"); } const ms = new Date(o.date + "T00:00:00") - d; let t; if (ms > 0) { const days = Math.floor(ms / 864e5); t = days >= 1 ? `${days} day${days === 1 ? "" : "s"}` : lkSpan(ms); } else { const ago = Math.floor(-ms / 864e5); t = ago < 1 ? "Today" : `${ago} day${ago === 1 ? "" : "s"} ago`; } lkSet(nd, ".lk-cl", o.label || "Countdown"); lkSet(nd, ".lk-cd", t); } },
+  { id: "progress", name: "Day and year progress", opts: [], html: () => '<div class="lk-pr"></div>',
+    upd: (nd, o, S, d) => { if (nd._p && d - nd._p < 5000) return; nd._p = +d; const y = d.getFullYear(), day = (d - new Date(y, d.getMonth(), d.getDate())) / 864e5 * 100, yr = (d - new Date(y, 0, 1)) / (new Date(y + 1, 0, 1) - new Date(y, 0, 1)) * 100; nd.querySelector(".lk-pr").innerHTML = `<div>Today<span>${Math.floor(day)}%</span></div>${lkBar(day)}<div>${y}<span>${Math.floor(yr)}%</span></div>${lkBar(yr)}`; } },
+  { id: "weather", name: "Weather", opts: [["unit", "select", "Units", [["c", "Celsius"], ["f", "Fahrenheit"]]], ["loc", "button", "Use my location", "wxloc"]], html: () => '<div class="lk-big lk-wx"></div>',
+    upd: (nd, o, S, d) => { if (nd._w && d - nd._w < 60000) return; nd._w = +d; lkWeather(nd, o, d); } },
+  { id: "moon", name: "Moon phase", opts: [], html: () => '<div class="lk-sm lk-mn"></div>', upd: (nd, o, S, d) => lkSet(nd, ".lk-mn", "Moon: " + lkMoon(d)) },
+  { id: "battery", name: "Battery", opts: [], html: () => '<div class="lk-bat"></div>', upd: nd => lkSet(nd, ".lk-bat", typeof batt !== "undefined" && batt ? `Battery ${Math.round(batt.level * 100)}%${batt.charging ? " · Charging" : ""}` : "") },
+  { id: "network", name: "Network", opts: [], html: () => '<div class="lk-sm lk-nt"></div>',
+    upd: nd => { const c = navigator.connection; lkSet(nd, ".lk-nt", (navigator.onLine ? "Online" : "Offline") + (c ? [c.effectiveType && c.effectiveType.toUpperCase(), c.downlink && c.downlink + " Mbps", c.rtt != null && c.rtt + " ms"].filter(Boolean).map(x => " · " + x).join("") : "")); } },
+  { id: "device", name: "Device info", opts: [], html: () => '<div class="lk-sm lk-dv"></div>',
+    upd: nd => lkSet(nd, ".lk-dv", [navigator.hardwareConcurrency && navigator.hardwareConcurrency + " cores", navigator.deviceMemory && "~" + navigator.deviceMemory + " GB RAM", screen.width + "×" + screen.height].filter(Boolean).join(" · ")) },
+  { id: "storage", name: "OS storage", opts: [], html: () => '<div class="lk-pr"></div>',
+    upd: (nd, o, S, d) => { if (nd._p && d - nd._p < 10000) return; nd._p = +d; const u = usage(), l = limitBytes(); nd.querySelector(".lk-pr").innerHTML = `<div>Storage<span>${fmt(u)} of ${fmt(l)}</span></div>${lkBar(u / l * 100)}`; } },
+  { id: "uptime", name: "OS open for", opts: [], html: () => '<div class="lk-sm lk-up"></div>', upd: (nd, o, S, d) => lkSet(nd, ".lk-up", "OS open for " + lkSpan(Date.now() - performance.timeOrigin)) },
+  { id: "lockedfor", name: "Locked for", opts: [], html: () => '<div class="lk-sm lk-lf"></div>', upd: (nd, o, S, d, born) => lkSet(nd, ".lk-lf", "Locked for " + lkSpan(Date.now() - born)) },
+  { id: "recent", name: "Recent apps", opts: [], html: () => '<div class="lk-sm lk-rc"></div>',
+    upd: (nd, o, S, d) => { if (nd._p && d - nd._p < 30000) return; nd._p = +d; const n = LS("recentApps", []).map(k => catalog.find(a => key(a) === k)).filter(Boolean).slice(0, 4).map(a => a.name); lkSet(nd, ".lk-rc", n.length ? "Recent: " + n.join(" · ") : "No recent apps"); } },
+  { id: "notifications", name: "Notification count", opts: [], html: () => '<div class="lk-sm lk-nc"></div>', upd: nd => lkSet(nd, ".lk-nc", notes.length ? `${notes.length} notification${notes.length === 1 ? "" : "s"}` : "No notifications") },
+  { id: "note", name: "Sticky note", opts: [["text", "area", "Note text"]], html: o => `<div class="lk-note">${esc(o.text || "Write a note in Settings")}</div>` },
+  { id: "fact", name: "Fun fact of the day", opts: [["lines", "area", "Your own lines, one per line (leave empty for built-in facts)"]], html: () => '<div class="lk-sm lk-ft" style="max-width:320px"></div>',
+    upd: (nd, o, S, d) => { const own = String(o.lines || "").split("\n").map(x => x.trim()).filter(Boolean), l = own.length ? own : LK_FACTS, day = Math.floor((d.getTime() - d.getTimezoneOffset() * 60000) / 864e5); lkSet(nd, ".lk-ft", l[day % l.length]); } },
+];
+function lockWidgetsGet(S = getSettings()) { // { id: options } for the enabled widgets; the old per-widget switches are read until new ones are saved
+  if (S.lockW && typeof S.lockW === "object" && !Array.isArray(S.lockW)) return S.lockW;
+  const w = {}; if (S.lockAnalog) w.analog = { sec: !!S.lockSeconds }; if (S.lockDigital) w.digital = { sec: !!S.lockSeconds }; if (S.lockDate) w.date = {}; if (S.lockBattery) w.battery = {};
+  return w;
+}
+function lockWidgetSet(id, opt, val) { // opt undefined = turn the widget on/off, otherwise change one of its options
+  const S = getSettings(), w = { ...lockWidgetsGet(S) };
+  if (opt === undefined) { if (val) w[id] = w[id] || {}; else delete w[id]; } else if (w[id]) w[id] = { ...w[id], [opt]: val };
+  save("settings", { ...S, lockW: w });
+}
+function lockWidgetUi() { // the Settings list: every widget with its switch, options appear when it is on
+  const on = lockWidgetsGet(), att = (id, k) => `data-w="${id}"${k ? ` data-o="${k}"` : ""}`, fld = "width:100%;padding:6px 8px;background:rgba(128,128,128,.2);border:1px solid rgba(128,128,128,.6);color:inherit;outline:0";
+  return LOCK_WIDGETS.map(w => { const o = on[w.id]; return `<div style="margin:6px 0"><label>${esc(w.name)}<input type="checkbox" ${att(w.id)} data-r="1" ${o ? "checked" : ""}></label>${o && w.opts.length ? `<div style="margin-left:18px">${w.opts.map(([k, t, l, x]) => {
+    const v = o[k];
+    if (t === "bool") return `<label>${esc(l)}<input type="checkbox" ${att(w.id, k)} ${v ? "checked" : ""}></label>`;
+    if (t === "select") return `<label>${esc(l)}<select ${att(w.id, k)}>${x.map(([a, b]) => `<option value="${a}" ${(v || x[0][0]) === a ? "selected" : ""}>${esc(b)}</option>`).join("")}</select></label>`;
+    if (t === "area") return `<label style="display:block">${esc(l)}<textarea ${att(w.id, k)} rows="3" style="${fld};margin-top:4px">${esc(v || "")}</textarea></label>`;
+    if (t === "button") return `<button data-act="${x}">${esc(l)}</button>`;
+    return `<label style="display:block">${esc(l)}<input type="${t}" ${att(w.id, k)} value="${esc(v || "")}" placeholder="${esc(x || "")}" style="${fld};margin-top:4px"></label>`;
+  }).join("")}</div>` : ""}</div>`; }).join("");
+}
 function askPw(title, o = {}) { // resolves with the typed password, or null if cancelled
   return new Promise(res => {
-    const check = o.check || (o.newPw ? null : checkPw);
+    const check = o.check || (o.newPw ? null : checkPw), S = getSettings();
+    const layout = o.full ? S.lockLayout : "pw", two = layout === "two"; // pw = only the password box, clock = widgets above it, two = a widget screen first, any interaction opens the password box
+    const on = layout === "pw" ? {} : lockWidgetsGet(S), list = LOCK_WIDGETS.filter(w => on[w.id]);
+    const widgets = list.map(w => `<div class="lkw lkw-${w.id}" data-wid="${w.id}">${w.html(on[w.id], S)}</div>`).join("");
     const el = document.createElement("div"); el.className = "lock" + (o.full ? " full" : "");
-    el.innerHTML = `${o.full ? '<div class="lk-time"></div><div class="lk-date"></div>' : ""}<div class="lk-t">${esc(title)}</div><input class="lk-in" type="password" autocomplete="off" autocapitalize="off"><div class="lk-msg"></div><button class="lk-ok">OK</button><div class="lk-foot">${o.full ? '<a data-g="1">Enter as Guest</a>' : ""}${o.cancel ? '<a data-c="1">Cancel</a>' : ""}</div>`;
-    const inp = el.querySelector(".lk-in"), msg = el.querySelector(".lk-msg"); let busy = false;
-    const clock = () => { if (!o.full) return; const n = new Date(); el.querySelector(".lk-time").textContent = n.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); el.querySelector(".lk-date").textContent = n.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" }); };
-    const done = r => { document.removeEventListener("keydown", kd, true); clearInterval(tm); el.remove(); res(r); };
+    el.innerHTML = `${o.full && (widgets || two) ? `<div class="lk-w">${widgets}${two ? '<div class="lk-hint">Click or press any key to unlock</div>' : ""}</div>` : ""}<div class="lk-p"><div class="lk-t">${esc(title)}</div><input class="lk-in" type="password" autocomplete="off" autocapitalize="off"><div class="lk-msg"></div><button class="lk-ok">OK</button><div class="lk-foot">${o.full ? '<a data-g="1">Enter as Guest</a>' : ""}${o.cancel ? '<a data-c="1">Cancel</a>' : ""}</div></div>`;
+    const inp = el.querySelector(".lk-in"), msg = el.querySelector(".lk-msg"), wEl = el.querySelector(".lk-w"), pEl = el.querySelector(".lk-p");
+    let busy = false, stage = two ? "w" : "p", last = Date.now(); const born = last, nodes = list.map(w => [w, el.querySelector(`[data-wid="${w.id}"]`), on[w.id]]);
+    const setStage = st => { // two-screen mode: "w" = widgets only, "p" = password box
+      stage = st; last = Date.now(); if (!two) return;
+      wEl.style.display = st === "w" ? "" : "none"; pEl.style.display = st === "p" ? "" : "none";
+      if (st === "p") inp.focus(); else { inp.value = ""; msg.textContent = ""; inp.blur(); }
+    };
+    const clock = () => { // every second, so minutes never lag, and again the moment the tab becomes visible
+      if (!o.full) return; const n = new Date();
+      for (const [w, nd, wo] of nodes) { try { if (w.upd) w.upd(nd, wo, S, n, born); } catch { /* one broken widget never blocks the lock screen */ } }
+    };
+    const done = r => { document.removeEventListener("keydown", kd, true); document.removeEventListener("visibilitychange", clock); clearInterval(tm); el.remove(); res(r); };
     const submit = async () => {
       if (busy || !inp.value) return; busy = true;
       const r = check ? await check(inp.value) : { ok: true };
       if (r.ok) return done(inp.value);
       msg.textContent = r.msg || ""; el.classList.add("shake"); setTimeout(() => el.classList.remove("shake"), 300); inp.value = ""; busy = false;
     };
-    const kd = e => { if (e.key === "Escape" && o.cancel) { e.stopPropagation(); done(null); } else if (e.key === "Enter") { e.stopPropagation(); e.preventDefault(); submit(); } };
-    el.onclick = e => { if (e.target.closest(".lk-ok")) submit(); else if (e.target.closest("[data-c]")) done(null); else if (e.target.closest("[data-g]")) guestEnter(); };
-    document.addEventListener("keydown", kd, true);
-    const tm = setInterval(clock, 15000); clock();
-    document.body.appendChild(el); setTimeout(() => inp.focus(), 0);
+    const kd = e => {
+      last = Date.now();
+      if (stage === "w") { setStage("p"); if (!(e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey)) e.preventDefault(); e.stopPropagation(); return; } // the first key only opens the password box (a typed character still lands in it)
+      if (e.key === "Escape" && o.cancel) { e.stopPropagation(); done(null); } else if (e.key === "Enter") { e.stopPropagation(); e.preventDefault(); submit(); }
+    };
+    el.onclick = e => { last = Date.now(); if (stage === "w") return setStage("p"); if (e.target.closest(".lk-ok")) submit(); else if (e.target.closest("[data-c]")) done(null); else if (e.target.closest("[data-g]")) guestEnter(); };
+    el.addEventListener("pointerdown", () => { last = Date.now(); });
+    document.addEventListener("keydown", kd, true); document.addEventListener("visibilitychange", clock);
+    const tm = o.full ? setInterval(() => { clock(); if (two && stage === "p" && !busy && Date.now() - last > 60000) setStage("w"); }, 1000) : 0; // a minute with no activity on the password screen goes back to the widget screen
+    clock();
+    if (two) pEl.style.display = "none";
+    document.body.appendChild(el); if (!two) setTimeout(() => inp.focus(), 0);
   });
 }
 async function copyDiag() { // a text summary to paste into a bug report: no files, no passwords
@@ -1946,12 +2049,13 @@ const lockSection = () => {
         ${has ? `<h3>Backup passwords</h3>${a.pw.slice(1).map((p, i) => `<div class="item row"><div style="flex:1">Backup ${i + 1}</div><button data-act="bkdel" data-i="${i + 1}">Remove</button></div>`).join("")}<button data-act="bkadd">Add backup password</button>
         
         <h3>Auto-lock</h3><label>Lock after being idle<select data-k="idleLock" data-n="1">${[[0, "Never"], [1, "1 minute"], [5, "5 minutes"], [10, "10 minutes"], [15, "15 minutes"], [30, "30 minutes"]].map(([v, l]) => `<option value="${v}" ${v === getSettings().idleLock ? "selected" : ""}>${l}</option>`).join("")}</select></label>
+        <h3>Lock screen look</h3><label>Layout<select data-k="lockLayout">${[["pw", "Password only"], ["clock", "Clock above password"], ["two", "Widgets first, then password"]].map(([v, l]) => `<option value="${v}" ${v === getSettings().lockLayout ? "selected" : ""}>${l}</option>`).join("")}</select></label><p>Password only shows just the password box. The other two layouts show the widgets you turn on below (all off = a plain screen). With "Widgets first", any click or key opens the password box, and a minute without activity there goes back to the first screen.</p><button data-act="lknow">Lock now to preview</button><h3>Widgets</h3>${lockWidgetUi()}
         <h3>Lock shortcut</h3><label>Lock by pressing a key<input type="checkbox" data-k="lockBind" ${getSettings().lockBind ? "checked" : ""}></label><label>Key<button data-act="lkkey">${esc(getSettings().lockKey)}</button></label><label>Presses in a row<select data-k="lockClicks" data-n="1">${[1, 2, 3, 4, 5].map(n => `<option ${n === getSettings().lockClicks ? "selected" : ""}>${n}</option>`).join("")}</select></label>` : ""}
         <h3>Delete everything</h3><p>Erases all files, apps, settings, Guest data and passwords.${has ? " Needs your password." : ""}</p><button data-act="delall">Delete all</button>`;
 };
 
 // ===================== BACKUP: EXPORT / IMPORT =====================
-const SETTING_GROUPS = { appearance: ["site", "theme", "accent", "bgMode", "bgColor", "bgLink", "bgFile", "iconSize", "taskSearch", "taskLabels", "taskPos"], clock: ["hour24", "clockSeconds", "clockWeekday"], windows: ["snap", "rememberWin", "keys", "keysFile", "keysEdit"], system: ["autoUpdate", "limiter", "limitMB", "binDays"] };
+const SETTING_GROUPS = { appearance: ["site", "theme", "accent", "bgMode", "bgColor", "bgLink", "bgFile", "iconSize", "taskSearch", "taskLabels", "taskPos", "lockLayout", "lockDigital", "lockDate", "lockAnalog", "lockSeconds", "lockBattery", "lockW"], clock: ["hour24", "clockSeconds", "clockWeekday"], windows: ["snap", "rememberWin", "keys", "keysFile", "keysEdit"], system: ["autoUpdate", "limiter", "limitMB", "binDays"] };
 // ----- save data from other pages (games etc.) and encrypted passwords -----
 const bytesToB64 = u8 => { let t = ""; for (let i = 0; i < u8.length; i += 0x8000) t += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(t); };
 const b64ToBytes = t => Uint8Array.from(atob(t), c => c.charCodeAt(0));
